@@ -1,0 +1,30 @@
+{
+  "name": "hyperactive",
+  "version": "1.0.0",
+  "description": "Creates mocha tests for all hypermedia of your API",
+  "author": "Tabcorp Digital Technology Team",
+  "license": "Copyright Tabcorp Pty Ltd 2014",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TabDigital/hyperactive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TabDigital/hyperactive/issues"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha"
+  },
+  "devDependencies": {
+    "should": "~2.1.1",
+    "mocha": "~1.15.1",
+    "sinon": "~1.8.1",
+    "restify": "~2.6.1"
+  },
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "unirest": "~0.1.4",
+    "coffee-script": "~1.7.1",
+    "js-match": "~1.0.6"
+  }
+}
