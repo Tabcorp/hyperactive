@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "lodash": "~2.4.1",
-    "unirest": "~0.1.4",
     "coffee-script": "~1.7.1",
-    "js-match": "~1.0.6"
+    "js-match": "~1.0.6",
+    "unirest": "~0.2.7"
   }
 }
