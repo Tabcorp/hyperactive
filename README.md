@@ -21,8 +21,10 @@ describe("My API", function() {
   it("should be discoverable", function() {
     hyperactive.crawl({
       url: "http://myApiEndpoint.com/route",
-      headers: {
-        Accept: "application/json"
+      options: {
+        headers: {
+          Accept: "application/json"
+        }
       }
     });
   })
@@ -45,19 +47,24 @@ describe("My API", function() {
   it("should be discoverable", function() {
     hyperactive.crawl({
       url: "http://myApiEndpoint.com/route",
-      headers: {
-        Accept: "application/json"
-      },
-      basicAuth : {
-        user: "myUsername",
-        pass: "myPassword"
-      },
-      secureProtocol : "SSLv3_client_method",
-      strictSSL : false
+      options: {
+        headers: {
+          Accept: "application/json"
+        },
+        auth : {
+          user: "myUsername",
+          pass: "myPassword"
+        },
+        secureProtocol : "SSLv3_client_method",
+        strictSSL : false
+      }
     });
   })
 })
 ```
+
+*Note:* `hyperactive` uses [unirest](https://github.com/Mashape/unirest-nodejs) to send requests.
+So all options that you pass in must have a corresponding unirest `Request` function.
 
 ### - How does it find hypermedia links?
 
@@ -105,8 +112,10 @@ function getLinks(responseBody) {
 
 hyperactive.crawl({
   url: "http://myApiEndpoint.com/route",
-  headers: {
-    Accept: "application/json"
+  options: {
+    headers: {
+      Accept: "application/json"
+    },
   },
   getLinks: getLinks
 });
@@ -154,8 +163,10 @@ function validate(url, responseBody) {
 
 hyperactive.crawl({
   url: "http://myApiEndpoint.com/route",
-  headers: {
-    Accept: "application/json"
+  options: {
+    headers: {
+      Accept: "application/json"
+    },
   },
   validate: validate
 });
@@ -169,9 +180,11 @@ If that's taking too long, you can also crawl a percentage of all links:
 ```js
 hyperactive.crawl({
   url: "http://myApiEndpoint.com/route",
-  headers: {
-    Accept: "application/json"
-  },
+  options: {
+    headers: {
+      Accept: "application/json"
+    },
+  }
   samplePercentage: 75
 });
 ```
