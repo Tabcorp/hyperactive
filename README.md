@@ -2,6 +2,10 @@
 
 Small utility used to actively test your API by crawling the hypermedia links
 
+[![Build Status](https://travis-ci.org/TabDigital/hyperactive.svg?branch=master)](https://travis-ci.org/TabDigital/hyperactive)
+
+[![npm install](https://nodei.co/npm/hyperactive.png?mini=true)](https://nodei.co/npm/hyperactive/)
+
 ## How does it work?
 
 hyperactive works by creating [mocha](https://github.com/visionmedia/mocha) tests for each unique link in your API response
