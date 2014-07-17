@@ -1,47 +1,45 @@
-restify = require 'restify'
+http = require 'http'
 
-exports.createServer =  (port) ->
-  server = restify.createServer()
-  server.use restify.bodyParser {"mapParams": false}
-  server.use restify.queryParser {"mapParams": false}
+exports.createServer = (port) ->
 
   ROUTE1 = "http://localhost:#{port}/route1"
   ROUTE2 = "http://localhost:#{port}/route2"
   ROUTE3 = "http://localhost:#{port}/route3"
 
-  server.LINKS_AT_ROOT = 
-    _links: 
-        self: 
-          href: ROUTE1
-        route2: 
-          href: ROUTE2
+  LINKS_AT_ROOT =
+    _links:
+      self:
+        href: ROUTE1
+      route2:
+        href: ROUTE2
 
-  server.LINKS_IN_ARRAY = 
+  LINKS_IN_ARRAY =
     objects: [
       {_links: {route3: { href: ROUTE3}}}
       {_links: {route1: { href: ROUTE1}}}
     ]
 
-  server.LINKS_IN_OBJECT = 
+  LINKS_IN_OBJECT =
     object:
-      name: "MockObject"
-      _links: 
-        route1: 
+      name: 'MockObject'
+      _links:
+        route1:
           href: ROUTE1
-        route3: 
+        route3:
           href: ROUTE3
 
-  server.get '/route1', (req, res, next) ->
-    willReturn server.LINKS_AT_ROOT, res, next
+  server = http.createServer (req, res) ->
+    switch req.url
+      when '/route1' then send res, 200, server.LINKS_AT_ROOT
+      when '/route2' then send res, 200, server.LINKS_IN_ARRAY
+      when '/route3' then send res, 200, server.LINKS_IN_OBJECT
+      else send res, 404, 'Not found'
 
-  server.get '/route2', (req, res, next) ->
-    willReturn server.LINKS_IN_ARRAY, res, next
-
-  server.get '/route3', (req, res, next) ->
-    willReturn server.LINKS_IN_OBJECT, res, next
-
+  server.LINKS_AT_ROOT = LINKS_AT_ROOT
+  server.LINKS_IN_ARRAY = LINKS_IN_ARRAY
+  server.LINKS_IN_OBJECT = LINKS_IN_OBJECT
   server
 
-willReturn = (data, res, next) ->
-  res.send 200, data
-  next()
+send = (res, code, data) ->
+  res.writeHead code, {'Content-Type': 'application/json'}
+  res.end JSON.stringify(data)
