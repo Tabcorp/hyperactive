@@ -10,11 +10,8 @@ Small utility used to actively test your API by crawling the hypermedia links
 
 ## How does it work?
 
-hyperactive works by creating [mocha](https://github.com/visionmedia/mocha) tests for each unique link in your API response
-
-just pass hyperactive some basic config in your mocha test and it will do the rest
-
-## How do I use this in my project?
+`hyperactive` crawls your API responses, and creates [mocha](https://github.com/visionmedia/mocha) tests for each unique link it finds.
+Simply pass in some basic config and it will do the rest.
 
 ```js
 var hyperactive = require('hyperactive');
@@ -30,6 +27,9 @@ describe("My API", function() {
   })
 })
 ```
+
+*Note:* `hyperactive` needs to run as part of a [mocha](https://github.com/visionmedia/mocha) test suite.
+If you want to run it in a different context, just make sure `it` and `describe` are defined in the global scope.
 
 ## More options
 
