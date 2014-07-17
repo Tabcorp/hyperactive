@@ -3,7 +3,7 @@ should      = require 'should'
 sinon       = require 'sinon'
 crawler     = require "#{SRC}/crawler"
 linkFinder  = require "#{SRC}/link_finder"
-server      = require "#{SERVER}/server"
+server      = require "./server"
 
 assertCalledWithFirstArg = (stub, callIndex, expected) ->
   actual = stub.args[callIndex][0]
@@ -23,9 +23,9 @@ describe 'Crawler with server', ->
   dummyServer = null
 
   PORT = 6000
-  config = 
+  config =
     url: "http://localhost:#{PORT}/route1"
-    headers: 
+    headers:
       Accept: 'application/json'
 
   before (done) ->
@@ -61,7 +61,7 @@ describe 'Crawler with server', ->
         assertCalledWith validate, 2, [ "http://localhost:#{PORT}/route3", dummyServer.LINKS_IN_OBJECT ]
         done()
       ), 1000 # wait for all the calls to finish. Might be a better way to do it
-      
+
 
 
 describe "Replacing getLinks", ->
@@ -125,6 +125,3 @@ describe 'Crawler', ->
       crawler.processResponse 'parent', OK_RES, ->
 
       crawler.crawl.callCount.should.eql 3
-
-
-    
