@@ -14,163 +14,172 @@ just pass hyperactive some basic config in your mocha test and it will do the re
 
 ## How do I use this in my project?
 
-``` javascript
-    hyperactive = require('hyperactive');
+```js
+var hyperactive = require('hyperactive');
 
-    describe("My API", function() {
-        it("should be discoverable", function() {
-            var config = {
-                url: "http://myApiEndpoint.com/route",
-                headers: {
-                    Accept: "application/json"
-                }
-            }
-            hyperactive.crawl(config);
-        })    
-    })
+describe("My API", function() {
+  it("should be discoverable", function() {
+    hyperactive.crawl({
+      url: "http://myApiEndpoint.com/route",
+      headers: {
+        Accept: "application/json"
+      }
+    });
+  })
+})
 ```
 
-## What if my API uses SSL and basicAuth?
+## More options
 
-No problem, just add the following into the config
+### - How do I configure extra HTTP options?
 
-``` javascript
-    hyperactive = require('hyperactive');
+For SSL and basicAuth, just add the following to the config:
 
-    describe("My API", function() {
-        it("should be discoverable", function() {
-            var config = {
-                url: "http://myApiEndpoint.com/route",
-                headers: {
-                    Accept: "application/json"
-                },
-                basicAuth : {
-                  user: "myUsername",
-                  pass: "myPassword"
-                },
-                secureProtocol : "SSLv3_client_method",
-                strictSSL : false
-            }
-            hyperactive.crawl(config);
-        })    
-    })
+```js
+var hyperactive = require('hyperactive');
+
+describe("My API", function() {
+  it("should be discoverable", function() {
+    hyperactive.crawl({
+      url: "http://myApiEndpoint.com/route",
+      headers: {
+        Accept: "application/json"
+      },
+      basicAuth : {
+        user: "myUsername",
+        pass: "myPassword"
+      },
+      secureProtocol : "SSLv3_client_method",
+      strictSSL : false
+    });
+  })
+})
 ```
 
-## How does hyperactive know where to find my hypermedia links?
+### - How does it find hypermedia links?
 
-hyperactive by default looks for links in the following format
-``` javascript
-    {
-        resource: {
-            name: "my resource",
-            id: 1,
-            _links: {
-                link1: {
-                    href: "http://myApiEndpoint.com/route1"
-                }
-                link2: {
-                    href: "http://myApiEndpoint.com/route2"
-                }
-            }
-        }
+By default, `hyperactive` looks for links according to the [HAL](http://stateless.co/hal_specification.html) spec:
+
+```json
+{
+  "resource": {
+    "name": "my resource",
+    "id": 1,
+    "_links": {
+      "link1": {
+        "href": "http://myApiEndpoint.com/route1"
+      },
+      "link2": {
+        "href": "http://myApiEndpoint.com/route2"
+      }
     }
-``` 
-
-## But my links don't look like that!
-
-That's fine, hyperactive allows you to pass in your own custom link finding function. 
-
-e.g. if your links look like this
-``` javascript
-    {
-        resource: {
-            name: "my resource",
-            id: 1 
-        }
-        links: [
-            "http://myApiEndpoint.com/route1", 
-            "http://myApiEndpoint.com/route2"
-        ]
-    }
-```
-you can call hyperactive with the following configuration and it will find your links
-
-``` javascript
-    var config = {
-        url: "http://myApiEndpoint.com/route",
-        headers: {
-            Accept: "application/json"
-        },
-        getLinks: function(responseBody) {
-            return responseBody.links
-        }
-    }
-    hyperactive.crawl(config);
+  }
+}
 ```
 
-The getLinks function will receive a [SuperAgent](https://github.com/visionmedia/superagent) response and return an array of links for that response
+If you have a different format for links, you can pass your own link finder.
+For example, if your API returns the following:
 
-## How does hyperactive decide if a response is valid?
+```js
+{
+  "resource": {
+    "name": "my resource",
+    "id": 1
+  },
+  "links": [
+    "http://myApiEndpoint.com/route1",
+    "http://myApiEndpoint.com/route2"
+  ]
+}
+```
 
-By default hyperactive just check the `res.ok` is true of the response
-
-## But I want to do extra validation!
-
-No problem, hyperactive allows you to pass in a validation function
-Say you have the following response
+then you can call `hyperactive` with:
 
 ``` javascript
-    {
-        success: true,
-        resource: {
-            name: "my resource",
-            id: 1,
-            _links: {
-                link1: {
-                    href: "http://myApiEndpoint.com/route1"
-                }
-                link2: {
-                    href: "http://myApiEndpoint.com/route2"
-                }
-            }
-        }
+function getLinks(responseBody) {
+  return responseBody.links;
+}
+
+hyperactive.crawl({
+  url: "http://myApiEndpoint.com/route",
+  headers: {
+    Accept: "application/json"
+  },
+  getLinks: getLinks
+});
+```
+
+The getLinks function receives a [Unirest](https://github.com/Mashape/unirest-nodejs) response
+and should return an array of links for that response.
+It's up to you to get these links recursively if you have links
+nested at several levels inside the response.
+
+### - How do I validate the responses?
+
+By default `hyperactive` just checks that each response returns a `HTTP 200`
+(i.e. `res.ok === true`).
+You can also pass custom validation function.
+For example, if you have the following response:
+
+```json
+{
+  "success": true,
+  "resource": {
+    "name": "my resource",
+    "id": 1,
+    "_links": {
+      "link1": {
+        "href": "http://myApiEndpoint.com/route1"
+      },
+      "link2": {
+        "href": "http://myApiEndpoint.com/route2"
+      }
     }
-```
-you can call hyperactive with the following configuration and it will validate that success is `true`
-
-``` javascript
-    var config = {
-        url: "http://myApiEndpoint.com/route",
-        headers: {
-            Accept: "application/json"
-        },
-        validate: function(url, responseBody) {
-            if(url.match(/some-url/)) {
-                return responseBody.success
-            }
-            return true
-        }
-    }
-    hyperactive.crawl(config);
+  }
+}
 ```
 
-## But I only want to crawl a subset of my hypermedia links
+Then you can validate it with:
 
-No problem. Just specify the percentage of links you want to crawl and hyperactive will take care of it for you
+```js
+function validate(url, responseBody) {
+  if(url.match(/some-url/)) {
+    return responseBody.success;
+  }
+  return true;
+}
 
-``` javascript
-    var config = {
-        url: "http://myApiEndpoint.com/route",
-        headers: {
-            Accept: "application/json"
-        },
-        samplePercentage: 75
-    }
-    hyperactive.crawl(config);
+hyperactive.crawl({
+  url: "http://myApiEndpoint.com/route",
+  headers: {
+    Accept: "application/json"
+  },
+  validate: validate
+});
 ```
 
-## Testing
+### - Will it crawl EVERYTHING?
+
+By default, yes.
+If that's taking too long, you can also crawl a percentage of all links:
+
+```js
+hyperactive.crawl({
+  url: "http://myApiEndpoint.com/route",
+  headers: {
+    Accept: "application/json"
+  },
+  samplePercentage: 75
+});
+```
+
+## How can I contribute?
+
+The usual process:
 
 ```
+npm install
 npm test
 ```
+
+And if everything is passing, submit a pull request :)
