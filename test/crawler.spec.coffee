@@ -25,8 +25,9 @@ describe 'Crawler with server', ->
   PORT = 6000
   config =
     url: "http://localhost:#{PORT}/route1"
-    headers:
-      Accept: 'application/json'
+    options:
+      headers:
+        Accept: 'application/json'
 
   before (done) ->
     stubbedDone = sinon.stub()

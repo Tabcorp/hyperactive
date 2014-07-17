@@ -16,17 +16,17 @@ exports.setConfig = (userconfig) ->
 
 setIt = (it) ->
   localItFunction = it
-  
+
 createIt = (url) =>
   localItFunction url, (done) =>
-    build.request(url, config).end(
+    build.request(url, config.options).end(
       (res) =>
         exports.processResponse(url, res, done)
     )
 
 exports.processResponse = (parent, res, done) =>
   return done(res.text) if not res.ok
-  return done("Not a valid response: #{res.text}") if not validate parent, res  
+  return done("Not a valid response: #{res.text}") if not validate parent, res
   describe "#{parent}", ->
     _.forEach exports.getLinks(res), (link) ->
       linkFilter.processLink link
@@ -36,7 +36,7 @@ exports.processResponse = (parent, res, done) =>
 validate = (url, res) ->
   return true if not config?.validate?
   return config.validate(url, res.body)
-  
+
 exports.crawl = (url) ->
   createIt url
 
