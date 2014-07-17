@@ -63,8 +63,7 @@ describe("My API", function() {
 })
 ```
 
-*Note:* `hyperactive` uses [unirest](https://github.com/Mashape/unirest-nodejs) to send requests.
-So all options that you pass in must have a corresponding unirest `Request` function.
+*Note:* `hyperactive` uses [unirest](https://github.com/Mashape/unirest-nodejs) to send requests. The `options` hash can contain [any valid Request option](https://github.com/Mashape/unirest-nodejs#requestoptions) from unirest.
 
 ### - How does it find hypermedia links?
 
