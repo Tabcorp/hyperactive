@@ -11,18 +11,20 @@
   "bugs": {
     "url": "https://github.com/TabDigital/hyperactive/issues"
   },
-  "main": "src/index.js",
+  "main": "target/index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha"
+    "test": "make test",
+    "prepublish": "make compile"
   },
   "devDependencies": {
+    "coffee-script": "~1.7.1",
     "mocha": "~1.20.1",
+    "require-lint": "~1.0.0",
     "sinon": "~1.10.3",
     "should": "~4.0.4"
   },
   "dependencies": {
     "lodash": "~2.4.1",
-    "coffee-script": "~1.7.1",
     "js-match": "~1.0.6",
     "unirest": "~0.2.7"
   }
