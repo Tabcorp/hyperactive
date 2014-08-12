@@ -1,6 +1,7 @@
 .gitignore
 .npmignore
 .travis.yml
+Makefile
 logo.png
 test
 src
