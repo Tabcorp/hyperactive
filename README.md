@@ -199,6 +199,16 @@ hyperactive.crawl({
 });
 ```
 
+Even the start url could be a template
+```js
+hyperactive.crawl({
+  url: "http://myApiEndpoint.com/route?jurisdiction={jurisdiction}",
+  templateValues: {
+    jurisdiction: 'NSW'
+  }
+});
+```
+
 
 ## How can I contribute?
 

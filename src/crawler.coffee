@@ -30,13 +30,16 @@ exports.processResponse = (parent, res, templateValues, done) =>
   return done("Not a valid response: #{res.text}") if not validate parent, res
   describe "#{parent}", ->
     _.forEach exports.getLinks(res), (link) ->
-      if _.isObject(templateValues)
-        renderedLink = templates(link).fillFromObject(templateValues)
-      else
-        renderedLink = link
-      linkFilter.processLink renderedLink
-      exports.crawl renderedLink
+      expandedLink = expandUrl(link, templateValues)
+      linkFilter.processLink expandedLink
+      exports.crawl expandedLink
   done()
+
+expandUrl = (url, values) ->
+  if _.isObject(values) and not _.isEmpty(values)
+    templates(url).fillFromObject(values)
+  else
+    url
 
 validate = (url, res) ->
   return true if not config?.validate?
@@ -49,9 +52,9 @@ exports.startCrawl = (config, it) ->
   exports.reset()
   setIt it if it
   exports.setConfig config
-  url = config.url
-  linkFilter.processLink url
-  exports.crawl url
+  expandedUrl = expandUrl(config.url, config.templateValues)
+  linkFilter.processLink expandedUrl
+  exports.crawl expandedUrl
 
 exports.reset = ->
   linkFilter.reset()

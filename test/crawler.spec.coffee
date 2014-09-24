@@ -24,11 +24,12 @@ describe 'Crawler with server', ->
 
   PORT = 6000
   config =
-    url: "http://localhost:#{PORT}/route1"
+    url: "http://localhost:#{PORT}/{routeOne}"
     options:
       headers:
         Accept: 'application/json'
     templateValues:
+      routeOne: 'route1'
       routeFour: 'route4'
 
   before (done) ->
