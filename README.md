@@ -183,10 +183,22 @@ hyperactive.crawl({
     headers: {
       Accept: "application/json"
     },
-  }
+  },
   samplePercentage: 75
 });
 ```
+### - Will it crawl link with URI template ?
+
+Yes, you have to specify the values to be used in the URI template
+```js
+hyperactive.crawl({
+  url: "http://myApiEndpoint.com/route",
+  templateValues: {
+    jurisdiction: 'NSW'
+  }
+});
+```
+
 
 ## How can I contribute?
 

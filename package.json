@@ -26,6 +26,7 @@
   "dependencies": {
     "lodash": "~2.4.1",
     "js-match": "~1.0.6",
-    "unirest": "~0.2.7"
+    "unirest": "~0.2.7",
+    "uri-templates": "~0.1.5"
   }
 }

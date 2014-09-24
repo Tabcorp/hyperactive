@@ -1,4 +1,5 @@
 _           = require 'lodash'
+templates   = require 'uri-templates'
 linkFinder  = require './link_finder'
 linkFilter  = require './link_filter'
 build       = require './request_builder'
@@ -21,16 +22,20 @@ createIt = (url) =>
   localItFunction url, (done) =>
     build.request(url, config.options).end(
       (res) =>
-        exports.processResponse(url, res, done)
+        exports.processResponse(url, res, config.templateValues, done)
     )
 
-exports.processResponse = (parent, res, done) =>
+exports.processResponse = (parent, res, templateValues, done) =>
   return done(res.text) if not res.ok
   return done("Not a valid response: #{res.text}") if not validate parent, res
   describe "#{parent}", ->
     _.forEach exports.getLinks(res), (link) ->
-      linkFilter.processLink link
-      exports.crawl link
+      if _.isObject(templateValues)
+        renderedLink = templates(link).fillFromObject(templateValues)
+      else
+        renderedLink = link
+      linkFilter.processLink renderedLink
+      exports.crawl renderedLink
   done()
 
 validate = (url, res) ->

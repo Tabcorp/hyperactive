@@ -28,6 +28,8 @@ describe 'Crawler with server', ->
     options:
       headers:
         Accept: 'application/json'
+    templateValues:
+      routeFour: 'route4'
 
   before (done) ->
     stubbedDone = sinon.stub()
@@ -41,11 +43,12 @@ describe 'Crawler with server', ->
   it 'should crawl the correct links', (done) ->
     crawler.startCrawl config, stubbedIt
     setTimeout (->
-      stubbedIt.callCount.should.eql 3
+      stubbedIt.callCount.should.eql 4
       assertCalledWithFirstArg stubbedIt, 0, "http://localhost:#{PORT}/route1"
       assertCalledWithFirstArg stubbedIt, 1, "http://localhost:#{PORT}/route2"
-      assertCalledWithFirstArg stubbedIt, 2, "http://localhost:#{PORT}/route3"
-      stubbedDone.callCount.should.eql 3
+      assertCalledWithFirstArg stubbedIt, 2, "http://localhost:#{PORT}/route4"
+      assertCalledWithFirstArg stubbedIt, 3, "http://localhost:#{PORT}/route3"
+      stubbedDone.callCount.should.eql 4
       stubbedDone.alwaysCalledWith null
       done()
     ), 1000 # wait for all the calls to finish. Might be a better way to do it
@@ -56,10 +59,11 @@ describe 'Crawler with server', ->
       myconfig = _.extend config, { validate: validate }
       crawler.startCrawl myconfig, stubbedIt
       setTimeout (->
-        validate.callCount.should.eql 3
+        validate.callCount.should.eql 4
         assertCalledWith validate, 0, [ "http://localhost:#{PORT}/route1", dummyServer.LINKS_AT_ROOT   ]
         assertCalledWith validate, 1, [ "http://localhost:#{PORT}/route2", dummyServer.LINKS_IN_ARRAY  ]
-        assertCalledWith validate, 2, [ "http://localhost:#{PORT}/route3", dummyServer.LINKS_IN_OBJECT ]
+        assertCalledWith validate, 2, [ "http://localhost:#{PORT}/route4", dummyServer.LINKS_WITH_TEMPLATE ]
+        assertCalledWith validate, 3, [ "http://localhost:#{PORT}/route3", dummyServer.LINKS_IN_OBJECT ]
         done()
       ), 1000 # wait for all the calls to finish. Might be a better way to do it
 
@@ -109,8 +113,8 @@ describe 'Crawler', ->
       linkFinder.getLinks.onCall(0).returns ['a', 'b', 'c', 'b']
       linkFinder.getLinks.onCall(1).returns ['d', 'e', 'c', 'b']
 
-      crawler.processResponse 'parent', OK_RES, ->
-      crawler.processResponse 'parent', OK_RES, ->
+      crawler.processResponse 'parent', OK_RES, null, ->
+      crawler.processResponse 'parent', OK_RES, null, ->
 
       crawler.crawl.callCount.should.eql 5
       assertCalledWith crawler.crawl, 0, ['a']
@@ -123,6 +127,15 @@ describe 'Crawler', ->
       crawler.setConfig {samplePercentage: 75}
       linkFinder.getLinks.onCall(0).returns ['a', 'b', 'c', 'd']
 
-      crawler.processResponse 'parent', OK_RES, ->
+      crawler.processResponse 'parent', OK_RES, null, ->
 
       crawler.crawl.callCount.should.eql 3
+
+    it 'should crawl links with uri template', ->
+      linkFinder.getLinks.onCall(0).returns ['/{value1}?query={value2}{&value3}', 'b']
+
+      crawler.processResponse 'parent', OK_RES, {value1: 'one', value2: 'two'}, ->
+
+      crawler.crawl.callCount.should.eql 2
+      assertCalledWith crawler.crawl, 0, ['/one?query=two']
+      assertCalledWith crawler.crawl, 1, ['b']
