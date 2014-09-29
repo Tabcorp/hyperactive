@@ -1,4 +1,5 @@
 _           = require 'lodash'
+templates   = require 'uri-templates'
 linkFinder  = require './link_finder'
 linkFilter  = require './link_filter'
 build       = require './request_builder'
@@ -21,17 +22,24 @@ createIt = (url) =>
   localItFunction url, (done) =>
     build.request(url, config.options).end(
       (res) =>
-        exports.processResponse(url, res, done)
+        exports.processResponse(url, res, config.templateValues, done)
     )
 
-exports.processResponse = (parent, res, done) =>
+exports.processResponse = (parent, res, templateValues, done) =>
   return done(res.text) if not res.ok
   return done("Not a valid response: #{res.text}") if not validate parent, res
   describe "#{parent}", ->
     _.forEach exports.getLinks(res), (link) ->
-      linkFilter.processLink link
-      exports.crawl link
+      expandedLink = expandUrl(link, templateValues)
+      linkFilter.processLink expandedLink
+      exports.crawl expandedLink
   done()
+
+expandUrl = (url, values) ->
+  if _.isObject(values) and not _.isEmpty(values)
+    templates(url).fillFromObject(values)
+  else
+    url
 
 validate = (url, res) ->
   return true if not config?.validate?
@@ -44,9 +52,9 @@ exports.startCrawl = (config, it) ->
   exports.reset()
   setIt it if it
   exports.setConfig config
-  url = config.url
-  linkFilter.processLink url
-  exports.crawl url
+  expandedUrl = expandUrl(config.url, config.templateValues)
+  linkFilter.processLink expandedUrl
+  exports.crawl expandedUrl
 
 exports.reset = ->
   linkFilter.reset()
