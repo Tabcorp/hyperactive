@@ -35,12 +35,18 @@ exports.createServer = (port) ->
     _links:
       self: "http://localhost:#{port}/{routeFour}"
 
+  ERROR_RESPONSE =
+    error:
+      code: "OH_NO"
+      message: "Oh no!"
+
   server = http.createServer (req, res) ->
     switch req.url
       when '/route1' then send res, 200, server.LINKS_AT_ROOT
       when '/route2' then send res, 200, server.LINKS_IN_ARRAY
       when '/route3' then send res, 200, server.LINKS_IN_OBJECT
       when '/route4' then send res, 200, server.LINKS_WITH_TEMPLATE
+      when '/error'  then send res, 400, server.ERROR_RESPONSE
       else send res, 404, 'Not found'
 
   server.LINKS_AT_ROOT = LINKS_AT_ROOT

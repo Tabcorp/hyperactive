@@ -26,8 +26,8 @@ createIt = (url) =>
     )
 
 exports.processResponse = (parent, res, templateValues, done) =>
-  return done(res.text) if not res.ok
-  return done("Not a valid response: #{res.text}") if not validate parent, res
+  return done("Bad status #{res.status} for url #{res.url}") if not res.ok
+  return done("Not a valid response: #{res.body}") if not validate parent, res
   describe "#{parent}", ->
     _.forEach exports.getLinks(res), (link) ->
       expandedLink = expandUrl(link, templateValues)
