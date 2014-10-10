@@ -32,6 +32,14 @@ describe 'Crawler with server', ->
       routeOne: 'route1'
       routeFour: 'route4'
 
+  err_config =
+    url: "http://localhost:#{PORT}/{routeOne}"
+    options:
+      headers:
+        Accept: 'application/json'
+    templateValues:
+      routeOne: 'error'
+
   before (done) ->
     stubbedDone = sinon.stub()
     stubbedIt = sinon.stub().callsArgWith 1, stubbedDone
@@ -53,6 +61,14 @@ describe 'Crawler with server', ->
       stubbedDone.alwaysCalledWith null
       done()
     ), 1000 # wait for all the calls to finish. Might be a better way to do it
+
+  it 'should give an error when a crawled link gives an error status code', (done) ->
+    crawler.startCrawl err_config, (url, cb) ->
+      cb (err) ->
+        if err
+          done()
+        else
+          done('Bad status response while crawling should trigger a failed test')
 
   describe "Additional validation", ->
     it 'should call validate function', (done) ->
