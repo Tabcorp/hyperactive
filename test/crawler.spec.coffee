@@ -134,11 +134,11 @@ describe 'Crawler', ->
       crawler.processResponse 'parent', OK_RES, null, ->
 
       crawler.crawl.callCount.should.eql 5
-      assertCalledWith crawler.crawl, 0, ['a']
-      assertCalledWith crawler.crawl, 1, ['b']
-      assertCalledWith crawler.crawl, 2, ['c']
-      assertCalledWith crawler.crawl, 3, ['d']
-      assertCalledWith crawler.crawl, 4, ['e']
+      assertCalledWith crawler.crawl, 0, ['a', null]
+      assertCalledWith crawler.crawl, 1, ['b', null]
+      assertCalledWith crawler.crawl, 2, ['c', null]
+      assertCalledWith crawler.crawl, 3, ['d', null]
+      assertCalledWith crawler.crawl, 4, ['e', null]
 
     it 'should crawl specified percentage of links', ->
       crawler.setConfig {samplePercentage: 75}
@@ -154,5 +154,5 @@ describe 'Crawler', ->
       crawler.processResponse 'parent', OK_RES, {value1: 'one', value2: 'two'}, ->
 
       crawler.crawl.callCount.should.eql 2
-      assertCalledWith crawler.crawl, 0, ['/one?query=two']
-      assertCalledWith crawler.crawl, 1, ['b']
+      assertCalledWith crawler.crawl, 0, ['/one?query=two', {value1: 'one', value2: 'two'}]
+      assertCalledWith crawler.crawl, 1, ['b', {value1: 'one', value2: 'two'}]
