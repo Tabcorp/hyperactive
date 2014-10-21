@@ -18,11 +18,11 @@ exports.setConfig = (userconfig) ->
 setIt = (it) ->
   localItFunction = it
 
-createIt = (url) =>
+createIt = (url, templateValues) =>
   localItFunction url, (done) =>
     build.request(url, config.options).end(
       (res) =>
-        exports.processResponse(url, res, config.templateValues, done)
+        exports.processResponse(url, res, templateValues, done)
     )
 
 exports.processResponse = (parent, res, templateValues, done) =>
@@ -30,9 +30,9 @@ exports.processResponse = (parent, res, templateValues, done) =>
   return done("Not a valid response: #{res.body}") if not validate parent, res
   describe "#{parent}", ->
     _.forEach exports.getLinks(res), (link) ->
+      linkFilter.processLink link
       expandedLink = expandUrl(link, templateValues)
-      linkFilter.processLink expandedLink
-      exports.crawl expandedLink
+      exports.crawl expandedLink, templateValues
   done()
 
 expandUrl = (url, values) ->
@@ -45,8 +45,8 @@ validate = (url, res) ->
   return true if not config?.validate?
   return config.validate(url, res.body)
 
-exports.crawl = (url) ->
-  createIt url
+exports.crawl = (url, templateValues) ->
+  createIt url, templateValues
 
 exports.startCrawl = (config, it) ->
   exports.reset()
@@ -54,7 +54,7 @@ exports.startCrawl = (config, it) ->
   exports.setConfig config
   expandedUrl = expandUrl(config.url, config.templateValues)
   linkFilter.processLink expandedUrl
-  exports.crawl expandedUrl
+  exports.crawl expandedUrl, config.templateValues
 
 exports.reset = ->
   linkFilter.reset()
