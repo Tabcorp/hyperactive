@@ -53,10 +53,10 @@ describe 'Crawler with server', ->
     crawler.startCrawl config, stubbedIt
     setTimeout (->
       stubbedIt.callCount.should.eql 4
-      assertCalledWithFirstArg stubbedIt, 0, "http://localhost:#{PORT}/route1"
-      assertCalledWithFirstArg stubbedIt, 1, "http://localhost:#{PORT}/route2"
-      assertCalledWithFirstArg stubbedIt, 2, "http://localhost:#{PORT}/route4"
-      assertCalledWithFirstArg stubbedIt, 3, "http://localhost:#{PORT}/route3"
+      sinon.assert.calledWith stubbedIt, "http://localhost:#{PORT}/route1"
+      sinon.assert.calledWith stubbedIt, "http://localhost:#{PORT}/route2"
+      sinon.assert.calledWith stubbedIt, "http://localhost:#{PORT}/route4"
+      sinon.assert.calledWith stubbedIt, "http://localhost:#{PORT}/route3"
       stubbedDone.callCount.should.eql 4
       stubbedDone.alwaysCalledWith null
       done()
@@ -121,10 +121,11 @@ describe 'Crawler', ->
   describe 'processResponse', ->
 
     beforeEach ->
-      sinon.stub(crawler, 'crawl')
+      sinon.stub(crawler, 'createItWithResult')
+      crawler.setConfig options: {}
 
     afterEach ->
-      crawler.crawl.restore()
+      crawler.createItWithResult.restore()
 
     it 'should crawl links that have not previously been crawled', ->
       linkFinder.getLinks.onCall(0).returns ['a', 'b', 'c', 'b']
@@ -133,12 +134,12 @@ describe 'Crawler', ->
       crawler.processResponse 'parent', OK_RES, null, ->
       crawler.processResponse 'parent', OK_RES, null, ->
 
-      crawler.crawl.callCount.should.eql 5
-      assertCalledWith crawler.crawl, 0, ['a', null]
-      assertCalledWith crawler.crawl, 1, ['b', null]
-      assertCalledWith crawler.crawl, 2, ['c', null]
-      assertCalledWith crawler.crawl, 3, ['d', null]
-      assertCalledWith crawler.crawl, 4, ['e', null]
+      crawler.createItWithResult.callCount.should.eql 5
+      sinon.assert.calledWith crawler.createItWithResult, 'a'
+      sinon.assert.calledWith crawler.createItWithResult, 'b'
+      sinon.assert.calledWith crawler.createItWithResult, 'c'
+      sinon.assert.calledWith crawler.createItWithResult, 'd'
+      sinon.assert.calledWith crawler.createItWithResult, 'e'
 
     it 'should crawl specified percentage of links', ->
       crawler.setConfig {samplePercentage: 75}
@@ -146,13 +147,13 @@ describe 'Crawler', ->
 
       crawler.processResponse 'parent', OK_RES, null, ->
 
-      crawler.crawl.callCount.should.eql 3
+      crawler.createItWithResult.callCount.should.eql 3
 
     it 'should crawl links with uri template', ->
       linkFinder.getLinks.onCall(0).returns ['/{value1}?query={value2}{&value3}', 'b']
 
       crawler.processResponse 'parent', OK_RES, {value1: 'one', value2: 'two'}, ->
 
-      crawler.crawl.callCount.should.eql 2
-      assertCalledWith crawler.crawl, 0, ['/one?query=two', {value1: 'one', value2: 'two'}]
-      assertCalledWith crawler.crawl, 1, ['b', {value1: 'one', value2: 'two'}]
+      crawler.createItWithResult.callCount.should.eql 2
+      sinon.assert.calledWith crawler.createItWithResult, '/one?query=two'
+      sinon.assert.calledWith crawler.createItWithResult,  'b'
