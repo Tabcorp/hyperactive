@@ -1,6 +1,6 @@
 {
   "name": "hyperactive",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "Creates mocha tests for all hypermedia of your API",
   "author": "Tabcorp Digital Technology Team",
   "license": "Copyright Tabcorp Pty Ltd 2014",
