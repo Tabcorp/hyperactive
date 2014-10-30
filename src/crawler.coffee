@@ -5,16 +5,23 @@ linkFinder  = require './link_finder'
 linkFilter  = require './link_filter'
 build       = require './request_builder'
 
-localItFunction = null
+DEFAULT_CONFIG = ->
+  url: null
+  options: {}
+  templateValues: {}
+  samplePercentage: 100
+  getLinks: linkFinder.getLinks
+  validate: -> true
+  recover: -> false
 
-config = null
+localItFunction = null
+config = DEFAULT_CONFIG()
 
 exports.getLinks = (res) ->
-  getLinksFn = if config?.getLinks? then config.getLinks else linkFinder.getLinks
-  linkFilter.filter(getLinksFn(res.body), config?.samplePercentage)
+  linkFilter.filter(config.getLinks(res.body), config.samplePercentage)
 
 exports.setConfig = (userconfig) ->
-  config = userconfig
+  config = _.extend {}, DEFAULT_CONFIG(), userconfig
 
 setIt = (it) ->
   localItFunction = it
@@ -31,7 +38,8 @@ exports.createItWithResult = (url, err) ->
     done err
 
 exports.processResponse = (parent, res, templateValues, done) =>
-  return done("Bad status #{res.status} for url #{res.url}") if not res.ok
+  if not res.ok
+    return done("Bad status #{res.status} for url #{res.url}") unless config.recover(res)
   try
     if not validate parent, res
       return done("Not a valid response: #{res.body}")
@@ -59,7 +67,6 @@ expandUrl = (url, values) ->
     url
 
 validate = (url, res) ->
-  return true if not config?.validate?
   return config.validate(url, res.body)
 
 exports.startCrawl = (config, it) ->
@@ -72,5 +79,5 @@ exports.startCrawl = (config, it) ->
 
 exports.reset = ->
   linkFilter.reset()
-  config = null
   localItFunction = null
+  config = DEFAULT_CONFIG()

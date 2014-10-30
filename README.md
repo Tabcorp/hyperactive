@@ -11,8 +11,7 @@ Small utility used to actively test your API by crawling the hypermedia links
 
 ## How does it work?
 
-`hyperactive` crawls your API responses, and creates [mocha](https://github.com/visionmedia/mocha) tests for each unique link it finds.
-Simply pass in some basic config and it will do the rest.
+`hyperactive` crawls your API responses, and creates [mocha](https://github.com/visionmedia/mocha) tests for each unique link it finds. Simply pass in some basic config and it will do the rest.
 
 ```js
 var hyperactive = require('hyperactive');
@@ -29,6 +28,17 @@ describe("My API", function() {
     });
   })
 })
+```
+
+Hyperactive will then recursively crawl your API, and make sure it can make a `GET` request to every URL.
+Any `4xx` or `5xx` status code while crawling makes the corresponding test fail, and the usual Mocha summary gets printed at the end:
+
+```
+1) http://my-api.com/route/that/fails
+   Bad status 404
+
+ 70 passing (2613ms)
+  1 failing
 ```
 
 *Note:* `hyperactive` needs to run as part of a [mocha](https://github.com/visionmedia/mocha) test suite.
@@ -209,6 +219,21 @@ hyperactive.crawl({
 });
 ```
 
+### Can I configure failure thresholds?
+
+By default, `hyperactive` fails any URL that responds with `4xx` or `5xx`. To handle intermittent issues, you can pass a custom `recover` function, which can make a test pass despite the errors. Note that this doesn't handle any errors returned from your custom `validate` function, this is just for recovering from HTTP errors.
+
+For example, you can setup a threshold for `400` errors using:
+
+```js
+var failures = 0;
+
+hyperactive.crawl({
+  recover: function(res) {
+    return (res.statusCode === 400 && ++failure < 10);
+  }
+});
+```
 
 ## How can I contribute?
 

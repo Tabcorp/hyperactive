@@ -15,7 +15,7 @@ assertCalledWith = (stub, callIndex, expected) ->
 
 OK_RES_BODY = {totallyValid: 'res'}
 OK_RES = {body: OK_RES_BODY, ok: true}
-
+BAD_RES = { ok: false, status: 503, body: 'Server down' }
 
 describe 'Crawler with server', ->
   stubbedIt = (->)
@@ -93,6 +93,7 @@ describe "Replacing getLinks", ->
   beforeEach ->
     stubbedGetLinks = sinon.stub()
     sinon.spy(linkFinder, 'getLinks')
+    crawler.setConfig()
 
   afterEach ->
     crawler.reset()
@@ -101,13 +102,13 @@ describe "Replacing getLinks", ->
   it 'should be able to replace getLinks function', ->
     crawler.setConfig { getLinks: stubbedGetLinks }
     crawler.getLinks OK_RES
-    linkFinder.getLinks.callCount.should.eql 0
-    stubbedGetLinks.callCount.should.eql 1
+    sinon.assert.notCalled linkFinder.getLinks
+    sinon.assert.calledOnce stubbedGetLinks
     assertCalledWith stubbedGetLinks, 0, [OK_RES_BODY]
 
   it 'should call LinkFinder if no replacement passed in', ->
     crawler.getLinks OK_RES
-    linkFinder.getLinks.callCount.should.eql 1
+    sinon.assert.calledOnce linkFinder.getLinks
 
 describe 'Crawler', ->
 
@@ -122,7 +123,7 @@ describe 'Crawler', ->
 
     beforeEach ->
       sinon.stub(crawler, 'createItWithResult')
-      crawler.setConfig options: {}
+      crawler.setConfig()
 
     afterEach ->
       crawler.createItWithResult.restore()
@@ -157,3 +158,14 @@ describe 'Crawler', ->
       crawler.createItWithResult.callCount.should.eql 2
       sinon.assert.calledWith crawler.createItWithResult, '/one?query=two'
       sinon.assert.calledWith crawler.createItWithResult,  'b'
+
+    it 'by default should error from a bad response', (done) ->
+      crawler.processResponse 'parent', BAD_RES, {}, (err) ->
+        err.should.match /status 503/
+        done()
+
+    it 'can recover from a bad response', (done) ->
+      crawler.setConfig {recover: -> true}
+      crawler.processResponse 'parent', BAD_RES, {}, (err) ->
+        should.not.exist err
+        done()

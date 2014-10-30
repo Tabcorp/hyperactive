@@ -29,8 +29,8 @@ describe 'LinkFilter', ->
 
   describe 'filter', ->
 
-    it 'should return all links if percentage not defined', ->
-      linkFilter.filter(['a', 'b', 'c', 'd']).should.eql ['a', 'b', 'c', 'd']
+    it 'should return all links if percentage is set to 100', ->
+      linkFilter.filter(['a', 'b', 'c', 'd'], 100).should.eql ['a', 'b', 'c', 'd']
 
     it 'should return a percentage of links', ->
       linkFilter.filter(['a', 'b', 'c', 'd'], 75).length.should.eql 3

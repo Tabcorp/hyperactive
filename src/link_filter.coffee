@@ -17,5 +17,7 @@ exports.linksToSample = (length, percentage) ->
 
 exports.filter = (links, samplePercentage) ->
   unprocessedLinks = exports.unprocessedLinks links
-  return unprocessedLinks if not samplePercentage?
-  _.sample unprocessedLinks, exports.linksToSample(unprocessedLinks.length, samplePercentage)
+  if samplePercentage is 100
+    unprocessedLinks
+  else
+    _.sample unprocessedLinks, exports.linksToSample(unprocessedLinks.length, samplePercentage)
