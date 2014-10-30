@@ -221,17 +221,16 @@ hyperactive.crawl({
 
 ### Can I configure failure thresholds?
 
-By default, `hyperactive` fails any URL that responds with `4xx` or `5xx`. To handle intermittent issues, you can pass a custom `tolerance` function, which can make a test pass despite the errors. Note that this doesn't handle any errors returned from your custom `validate` function, this is just for tolerating HTTP errors.
+By default, `hyperactive` fails any URL that responds with `4xx` or `5xx`. To handle intermittent issues, you can pass a custom `recover` function, which can make a test pass despite the errors. Note that this doesn't handle any errors returned from your custom `validate` function, this is just for recovering from HTTP errors.
 
 For example, you can setup a threshold for `400` errors using:
 
 ```js
-var failure = 0;
+var failures = 0;
 
 hyperactive.crawl({
-  tolerance: function(res) {
-    ++failure;
-    return (res.statusCode === 400 &&  < 10);
+  recover: function(res) {
+    return (res.statusCode === 400 && ++failure < 10);
   }
 });
 ```
