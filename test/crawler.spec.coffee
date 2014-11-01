@@ -169,3 +169,12 @@ describe 'Crawler', ->
       crawler.processResponse 'parent', BAD_RES, {}, (err) ->
         should.not.exist err
         done()
+
+    it 'does not run validators after recovering', (done) ->
+      crawler.setConfig {
+        recover: -> true
+        validate: -> throw new Error('should have a given value')
+      }
+      crawler.processResponse 'parent', BAD_RES, {}, (err) ->
+        should.not.exist err
+        done()

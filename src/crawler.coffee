@@ -39,12 +39,14 @@ exports.createItWithResult = (url, err) ->
 
 exports.processResponse = (parent, res, templateValues, done) =>
   if not res.ok
-    return done("Bad status #{res.status} for url #{res.url}") unless config.recover(res)
-  try
-    if not validate parent, res
-      return done("Not a valid response: #{res.body}")
-  catch err
+    err = "Bad status #{res.status} for url #{res.url}" unless config.recover(res)
     return done(err)
+  else
+    try
+      if not validate parent, res
+        return done("Not a valid response: #{res.body}")
+    catch err
+      return done(err)
 
   describe "#{parent}", ->
     requests = _.map exports.getLinks(res), (link) ->
