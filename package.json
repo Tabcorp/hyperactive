@@ -13,9 +13,7 @@
   },
   "main": "target/index.js",
   "scripts": {
-    "test": "make test",
-    "lint": "make lint",
-    "prepublish": "make test && make lint"
+    "test": "make test"
   },
   "devDependencies": {
     "coffeescript": "~2.3.2",
