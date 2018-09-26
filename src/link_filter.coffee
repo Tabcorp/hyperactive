@@ -9,7 +9,7 @@ exports.processLink = (link) ->
   processedLinks[link] = link
 
 exports.unprocessedLinks = (links) ->
-  _.filter (_.unique links), (link) ->
+  _.filter (_.uniq links), (link) ->
     link isnt undefined and processedLinks[link] is undefined
 
 exports.linksToSample = (length, percentage) ->
@@ -20,4 +20,4 @@ exports.filter = (links, samplePercentage) ->
   if samplePercentage is 100
     unprocessedLinks
   else
-    _.sample unprocessedLinks, exports.linksToSample(unprocessedLinks.length, samplePercentage)
+    _.sampleSize unprocessedLinks, exports.linksToSample(unprocessedLinks.length, samplePercentage)

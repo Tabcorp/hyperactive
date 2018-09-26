@@ -77,10 +77,10 @@ describe 'Crawler with server', ->
       crawler.startCrawl myconfig, stubbedIt
       setTimeout (->
         validate.callCount.should.eql 4
-        assertCalledWith validate, 0, [ "http://localhost:#{PORT}/route1", dummyServer.LINKS_AT_ROOT   ]
-        assertCalledWith validate, 1, [ "http://localhost:#{PORT}/route2", dummyServer.LINKS_IN_ARRAY  ]
-        assertCalledWith validate, 2, [ "http://localhost:#{PORT}/route4", dummyServer.LINKS_WITH_TEMPLATE ]
-        assertCalledWith validate, 3, [ "http://localhost:#{PORT}/route3", dummyServer.LINKS_IN_OBJECT ]
+        validate.args.should.containEql [ "http://localhost:#{PORT}/route1", dummyServer.LINKS_AT_ROOT   ]
+        validate.args.should.containEql [ "http://localhost:#{PORT}/route2", dummyServer.LINKS_IN_ARRAY  ]
+        validate.args.should.containEql [ "http://localhost:#{PORT}/route4", dummyServer.LINKS_WITH_TEMPLATE ]
+        validate.args.should.containEql [ "http://localhost:#{PORT}/route3", dummyServer.LINKS_IN_OBJECT ]
         done()
       ), 1000 # wait for all the calls to finish. Might be a better way to do it
 

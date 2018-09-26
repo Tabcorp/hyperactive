@@ -19,7 +19,9 @@ test-js: node_modules lint
 	@SRC=target $(BIN)/mocha
 
 publish: compile lint test-js
-	@$(BIN)/irish-pub
+	@echo "Checking unignored ..."
+	@echo
+	@unignored
 	@echo
 	@echo "Verify that the content above is correct"
 	@read -p "Press [Enter] to publish to npm"
