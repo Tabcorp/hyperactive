@@ -2,10 +2,10 @@
 
 Small utility used to actively test your API by crawling the hypermedia links
 
-![Logo](https://raw.githubusercontent.com/TabDigital/hyperactive/master/logo.png)
+![Logo](https://raw.githubusercontent.com/Tabcorp/hyperactive/master/logo.png)
 
-[![Build Status](https://travis-ci.org/TabDigital/hyperactive.svg?branch=master)](https://travis-ci.org/TabDigital/hyperactive)
-[![Dependency Status](https://david-dm.org/TabDigital/hyperactive.png?theme=shields.io)](https://david-dm.org/TabDigital/hyperactive) [![devDependency Status](https://david-dm.org/TabDigital/hyperactive/dev-status.png?theme=shields.io)](https://david-dm.org/TabDigital/hyperactive#info=devDependencies)
+[![Build Status](https://travis-ci.org/Tabcorp/hyperactive.svg?branch=master)](https://travis-ci.org/Tabcorp/hyperactive)
+[![Dependency Status](https://david-dm.org/Tabcorp/hyperactive.png?theme=shields.io)](https://david-dm.org/Tabcorp/hyperactive) [![devDependency Status](https://david-dm.org/Tabcorp/hyperactive/dev-status.png?theme=shields.io)](https://david-dm.org/Tabcorp/hyperactive#info=devDependencies)
 
 [![npm install](https://nodei.co/npm/hyperactive.png?mini=true)](https://nodei.co/npm/hyperactive/)
 
