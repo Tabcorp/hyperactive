@@ -1,14 +1,24 @@
+/* eslint-disable
+    func-names,
+    no-return-assign,
+    no-shadow,
+    no-undef,
+    no-use-before-define,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const _           = require('lodash');
-const async       = require('async');
-const templates   = require('uri-templates');
-const linkFinder  = require('./link_finder');
-const linkFilter  = require('./link_filter');
-const build       = require('./request_builder');
+const _ = require('lodash');
+const async = require('async');
+const templates = require('uri-templates');
+
+const linkFinder = require('./link_finder');
+const linkFilter = require('./link_filter');
+const build = require('./request_builder');
 
 const DEFAULT_CONFIG = () => ({
   url: null,
@@ -17,72 +27,63 @@ const DEFAULT_CONFIG = () => ({
   samplePercentage: 100,
   getLinks: linkFinder.getLinks,
   validate() { return true; },
-  recover() { return false; }
+  recover() { return false; },
 });
 
 let localItFunction = null;
 let config = DEFAULT_CONFIG();
 
-exports.getLinks = res => linkFilter.filter(config.getLinks(res.body), config.samplePercentage);
+exports.getLinks = (res) => linkFilter.filter(config.getLinks(res.body), config.samplePercentage);
 
-exports.setConfig = userconfig => config = _.extend({}, DEFAULT_CONFIG(), userconfig);
+exports.setConfig = (userconfig) => config = _.extend({}, DEFAULT_CONFIG(), userconfig);
 
-const setIt = it => localItFunction = it;
+const setIt = (it) => localItFunction = it;
 
-const createIt = (url, templateValues) => {
-  return localItFunction(url, done => {
-    return build.request(url, config.options).end(
-      res => {
-        return exports.processResponse(url, res, templateValues, done);
-    });
-  });
-};
+const createIt = (url, templateValues) => localItFunction(url, (done) => build.request(url, config.options).end(
+  (res) => exports.processResponse(url, res, templateValues, done),
+));
 
-exports.createItWithResult = (url, err) => localItFunction(url, done => done(err));
+exports.createItWithResult = (url, err) => localItFunction(url, (done) => done(err));
 
 exports.processResponse = (parent, res, templateValues, done) => {
   let err;
   if (!res.ok) {
     if (!config.recover(res)) { err = `Bad status ${res.status} for url ${res.url}`; }
     return done(err);
-  } else {
-    try {
-      if (!validate(parent, res)) {
-        return done(`Not a valid response: ${res.body}`);
-      }
-    } catch (error) {
-      err = error;
-      return done(err);
+  }
+  try {
+    if (!validate(parent, res)) {
+      return done(`Not a valid response: ${res.body}`);
     }
+  } catch (error) {
+    err = error;
+    return done(err);
   }
 
-  return describe(`${parent}`, function() {
-    const requests = _.map(exports.getLinks(res), link => (function(callback) {
+  return describe(`${parent}`, () => {
+    const requests = _.map(exports.getLinks(res), (link) => (function (callback) {
       linkFilter.processLink(link);
       const expandedLink = expandUrl(link, templateValues);
-      return build.request(expandedLink, config.options).end(res => {
-        return exports.processResponse(expandedLink, res, templateValues, err => callback(null, {err, link: expandedLink}));
-    });
+      return build.request(expandedLink, config.options).end((res) => exports.processResponse(expandedLink, res, templateValues, (err) => callback(null, { err, link: expandedLink })));
     }));
 
-    return async.parallel(requests, function(err, results) {
-      results.forEach(result => exports.createItWithResult(result.link, result.err));
+    return async.parallel(requests, (err, results) => {
+      results.forEach((result) => exports.createItWithResult(result.link, result.err));
       return done();
     });
   });
 };
 
-var expandUrl = function(url, values) {
+const expandUrl = function (url, values) {
   if (_.isObject(values) && !_.isEmpty(values)) {
     return templates(url).fillFromObject(values);
-  } else {
-    return url;
   }
+  return url;
 };
 
-var validate = (url, res) => config.validate(url, res.body);
+const validate = (url, res) => config.validate(url, res.body);
 
-exports.startCrawl = function(config, it) {
+exports.startCrawl = function (config, it) {
   exports.reset();
   if (it) { setIt(it); }
   exports.setConfig(config);
@@ -91,7 +92,7 @@ exports.startCrawl = function(config, it) {
   return createIt(expandedUrl, config.templateValues);
 };
 
-exports.reset = function() {
+exports.reset = function () {
   linkFilter.reset();
   localItFunction = null;
   return config = DEFAULT_CONFIG();

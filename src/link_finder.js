@@ -1,3 +1,8 @@
+/* eslint-disable
+    func-names,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,14 +10,13 @@
  */
 const _ = require('lodash');
 
-var linksForKey = function(val, key) {
+const linksForKey = function (val, key) {
   if (key === '_links') {
     return _.map((_.values(val)), 'href');
-  } else if (typeof val === 'object') {
+  } if (typeof val === 'object') {
     return _.map(val, linksForKey);
-  } else {
-    return [];
   }
+  return [];
 };
 
-exports.getLinks = responseBody => _.flattenDeep(linksForKey(responseBody, ''));
+exports.getLinks = (responseBody) => _.flattenDeep(linksForKey(responseBody, ''));
