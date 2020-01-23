@@ -1,1 +1,1 @@
-global.SRC = "#{__dirname}/../#{process.env.SRC or 'src'}"
+global.SRC = `${__dirname}/../${process.env.SRC || 'src'}`;

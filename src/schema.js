@@ -1,3 +1,3 @@
 module.exports =
   
-  url:            { match: 'url' }
+  {url:            { match: 'url' }};

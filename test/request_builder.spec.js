@@ -1,40 +1,57 @@
-should  = require 'should'
-build   = require "#{SRC}/request_builder"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const should  = require('should');
+const build   = require(`${SRC}/request_builder`);
 
-describe 'RequestBuilder', ->
+describe('RequestBuilder', function() {
 
-  URL = "http://abc.com"
+  const URL = "http://abc.com";
 
-  it 'should create a request if no config are provided', ->
-    req = build.request URL
-    req.should.have.property('options').have.properties
-      url: URL
+  it('should create a request if no config are provided', function() {
+    const req = build.request(URL);
+    return req.should.have.property('options').have.properties({
+      url: URL,
       method: "get"
+    });
+  });
 
-  it 'should create a request with provided config', ->
-    config =
-      headers:
+  return it('should create a request with provided config', function() {
+    const config = {
+      headers: {
         Accept: 'application/json'
-      auth:
-        user: 'basicUser'
+      },
+      auth: {
+        user: 'basicUser',
         pass: 'basicPassword'
-      headers:
-        Accept: 'application/json'
+      },
+      headers: {
+        Accept: 'application/json',
         'Content-type': 'application/json'
-      strictSSL: true
+      },
+      strictSSL: true,
       secureProtocol: 'mySecureProtocol'
+    };
 
-    req = build.request URL, config
-    req.should.have.property('options').have.properties
-      url: URL
-      method: "get"
-      headers:
+    const req = build.request(URL, config);
+    return req.should.have.property('options').have.properties({
+      url: URL,
+      method: "get",
+      headers: {
         Accept: 'application/json'
-      auth:
-        user: 'basicUser'
+      },
+      auth: {
+        user: 'basicUser',
         pass: 'basicPassword'
-      headers:
-        Accept: 'application/json'
+      },
+      headers: {
+        Accept: 'application/json',
         'Content-type': 'application/json'
-      strictSSL: true
+      },
+      strictSSL: true,
       secureProtocol: 'mySecureProtocol'
+    });
+  });
+});
