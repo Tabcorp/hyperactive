@@ -3,22 +3,13 @@ BIN = ./node_modules/.bin
 node_modules: package.json
 	@npm install
 
-compile: node_modules
-	@$(BIN)/coffee --output target --compile src
-
-watch: node_modules
-	@$(BIN)/coffee --output target --watch --compile src
-
-lint: node_modules compile
+lint: node_modules
 	@$(BIN)/require-lint
 
 test: node_modules lint
 	@SRC=src $(BIN)/mocha
 
-test-js: node_modules lint
-	@SRC=target $(BIN)/mocha
-
-publish: compile lint test-js
+publish: lint test
 	@echo "Checking unignored ..."
 	@echo
 	@unignored
@@ -27,4 +18,4 @@ publish: compile lint test-js
 	@read -p "Press [Enter] to publish to npm"
 	@npm publish
 
-.PHONY: compile watch lint test test-js publish
+.PHONY: lint test publish
